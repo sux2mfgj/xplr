@@ -40,6 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
+      # 4KiB: To run the runner, this stack size is required.
+      RUST_MIN_STACK: 4194304
     needs: prepare
     steps:
       - uses: actions/checkout@master
