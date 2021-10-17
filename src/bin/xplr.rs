@@ -107,17 +107,18 @@ mod tests {
 
     // TODO: Fix running GitHub action
     //
-    // #[test]
-    // fn test_cli_path_arg_valid() {
-    //     Command::cargo_bin("xplr")
-    //         .unwrap()
-    //         .arg("/tmp")
-    //         .arg("--on-load")
-    //         .arg("PrintResultAndQuit")
-    //         .assert()
-    //         .success()
-    //         .code(0)
-    //         .stderr("");
+    #[test]
+    fn test_cli_path_arg_valid() {
+        Command::cargo_bin("xplr")
+            .unwrap()
+            .arg("/tmp")
+            .arg("--on-load")
+            .arg("PrintResultAndQuit")
+            .assert()
+            .success()
+            .code(0)
+            .stderr("");
+    }
 
     //     Command::cargo_bin("xplr")
     //         .unwrap()
