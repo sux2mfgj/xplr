@@ -56,18 +56,16 @@ pub(crate) fn explore_async(
     thread::spawn(move || {
         explore_sync(config, parent.clone(), focused_path, fallback_focus)
             .map(|buf| {
-                tx_msg_in
-                    .send(Task::new(
-                        MsgIn::Internal(InternalMsg::SetDirectory(buf)),
-                        None,
-                    ))
+                tx_msg_in.send(Task::new(
+                    MsgIn::Internal(InternalMsg::SetDirectory(buf)),
+                    None,
+                ))
             })
             .unwrap_or_else(|e| {
-                tx_msg_in
-                    .send(Task::new(
-                        MsgIn::External(ExternalMsg::LogError(e.to_string())),
-                        None,
-                    ))
+                tx_msg_in.send(Task::new(
+                    MsgIn::External(ExternalMsg::LogError(e.to_string())),
+                    None,
+                ))
             })
     });
 }

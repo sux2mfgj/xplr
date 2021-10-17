@@ -223,7 +223,7 @@ impl Runner {
 
         // Enqueue on_load messages
         for msg in self.on_load {
-            tx_msg_in.send(app::Task::new(app::MsgIn::External(msg), None))?;
+            tx_msg_in.send(app::Task::new(app::MsgIn::External(msg), None));
         }
 
         'outer: for task in rx_msg_in {
@@ -236,7 +236,7 @@ impl Runner {
                             // NOTE: Do not schedule critical tasks via tx_msg_in in this loop.
                             // Try handling them immediately.
                             Enque(task) => {
-                                tx_msg_in.send(task)?;
+                                tx_msg_in.send(task);
                             }
 
                             Quit => {
