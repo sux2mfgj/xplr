@@ -167,6 +167,7 @@ impl Runner {
             app.focus_first(true)?
         };
 
+        eprintln!("{}", app.pwd);
         explorer::explore_recursive_async(
             app.explorer_config.clone(),
             app.pwd.clone().into(),
@@ -174,6 +175,7 @@ impl Runner {
             app.directory_buffer.as_ref().map(|d| d.focus).unwrap_or(0),
             tx_msg_in.clone(),
         );
+        eprintln!("{}", app.pwd);
         tx_pwd_watcher.send(app.pwd.clone())?;
 
         let mut result = Ok(None);
