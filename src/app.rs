@@ -2324,6 +2324,7 @@ impl App {
 
     pub fn log_error(mut self, message: String) -> Result<Self> {
         self.logs_hidden = false;
+        eprintln!("error log : {}", message);
         self.logs.push(Log::new(LogLevel::Error, message));
         Ok(self)
     }
