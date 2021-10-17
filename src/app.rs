@@ -2537,6 +2537,25 @@ impl App {
         }
     }
 }
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_create_app() {
+        use crate::app;
+        use crate::cli;
+        use std::env;
+
+        let basedir = env::current_dir().unwrap();
+        let mut cli = cli::Cli::default();
+        let mut pwd = cli
+            .path
+            .map(|p| if p.is_relative() { basedir.join(p) } else { p })
+            .unwrap_or_else(|| basedir.clone());
+
+        let lua = unsafe { mlua::Lua::unsafe_new() };
+        let mut app = app::App::create(pwd, &lua, None, cli.extra_config).unwrap();
+    }
+}
 
 /// Create a new runner object passing the default arguments
 pub fn runner() -> Result<Runner> {
