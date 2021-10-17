@@ -2537,25 +2537,6 @@ impl App {
         }
     }
 }
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_create_app() {
-        use crate::app;
-        use crate::cli;
-        use std::env;
-
-        let basedir = env::current_dir().unwrap();
-        let mut cli = cli::Cli::default();
-        let mut pwd = cli
-            .path
-            .map(|p| if p.is_relative() { basedir.join(p) } else { p })
-            .unwrap_or_else(|| basedir.clone());
-
-        let lua = unsafe { mlua::Lua::unsafe_new() };
-        let mut app = app::App::create(pwd, &lua, None, cli.extra_config).unwrap();
-    }
-}
 
 /// Create a new runner object passing the default arguments
 pub fn runner() -> Result<Runner> {
@@ -2565,4 +2546,27 @@ pub fn runner() -> Result<Runner> {
 /// Create a new runner object passing the given arguments
 pub fn from_cli(cli: Cli) -> Result<Runner> {
     Runner::from_cli(cli)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_app() {
+        use crate::cli;
+        use std::env;
+
+        let mut cli = cli::Cli::default();
+        cli.on_load
+            .push(serde_yaml::from_str("PrintPwdAndQuit").unwrap());
+        let r = from_cli(cli).unwrap();
+        r.run();
+    }
+
+    #[test]
+    fn test_create_default_runner() {
+        let r = runner().unwrap();
+        r.run();
+    }
 }
