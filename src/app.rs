@@ -1364,8 +1364,14 @@ impl App {
 
     pub fn handle_task(self, task: Task) -> Result<Self> {
         let app = match task.msg {
-            MsgIn::Internal(msg) => self.handle_internal(msg)?,
-            MsgIn::External(msg) => self.handle_external(msg, task.key)?,
+            MsgIn::Internal(msg) => {
+                eprintln!("{}", line!());
+                self.handle_internal(msg)?
+            }
+            MsgIn::External(msg) => {
+                eprintln!("{}", line!());
+                self.handle_external(msg, task.key)?
+            }
         };
         app.refresh()
     }
