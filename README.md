@@ -8,6 +8,8 @@ A hackable, minimal, fast TUI file explorer
 
 <p align="center">
 
+[![Continuous Integration](https://github.com/sayanarijit/xplr/actions/workflows/ci.yml/badge.svg)](https://github.com/sayanarijit/xplr/actions/workflows/ci.yml)
+
 <a href="https://crates.io/crates/xplr" target="_blank">
 <img src="https://img.shields.io/crates/v/xplr.svg" />
 </a>
