@@ -111,7 +111,7 @@ mod tests {
     fn test_cli_path_arg_valid() {
         Command::cargo_bin("xplr")
             .unwrap()
-            .arg("/tmp")
+            .arg("./")
             .arg("--on-load")
             .arg("PrintResultAndQuit")
             .assert()
