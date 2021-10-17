@@ -39,7 +39,7 @@ jobs:
     name: Test Suite
     runs-on: ubuntu-latest
     env:
-      RUST_BACKTRACE: 1
+      RUST_BACKTRACE: full
     needs: prepare
     steps:
       - uses: actions/checkout@master
