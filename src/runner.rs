@@ -578,3 +578,14 @@ pub fn runner() -> Result<Runner> {
 pub fn from_cli(cli: Cli) -> Result<Runner> {
     Runner::from_cli(cli)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_create_default_runner() {
+        let r = runner().unwrap();
+        r.run().unwrap();
+    }
+}
