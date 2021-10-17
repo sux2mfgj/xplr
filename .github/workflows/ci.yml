@@ -40,6 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RUST_BACKTRACE: full
+      RUST_MIN_STACK: 4194304 # 4KiB
     needs: prepare
     steps:
       - uses: actions/checkout@master
