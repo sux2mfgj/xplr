@@ -153,7 +153,9 @@ impl Runner {
         let (tx_msg_in, rx_msg_in) = mpsc::channel();
         let (tx_pwd_watcher, rx_pwd_watcher) = mpsc::channel();
 
+        eprintln!("{}", app.pwd);
         app = app.explore_pwd()?;
+        eprintln!("{}", app.pwd);
 
         app = if let Some(f) = self
             .focused_path
