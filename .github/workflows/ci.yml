@@ -43,8 +43,6 @@ jobs:
       # 4KiB: To run the runner, this stack size is required.
       RUST_MIN_STACK: 4194304
     needs: prepare
-    env:
-      RUST_BACKTRACE: full
     steps:
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@v1
