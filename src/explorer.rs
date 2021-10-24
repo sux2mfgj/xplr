@@ -94,3 +94,60 @@ pub(crate) fn explore_recursive_async(
         );
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_explore_sync() {
+        let config = ExplorerConfig::default();
+        let path = PathBuf::from("/bin");
+
+        let r = explore_sync(config, path, None, 0);
+
+        assert!(r.is_ok());
+    }
+
+    #[test]
+    fn test_failed_explore_sync() {
+        let config = ExplorerConfig::default();
+        let path = PathBuf::from("/there/is/no/path");
+
+        let r = explore_sync(config, path, None, 0);
+
+        assert!(r.is_err());
+    }
+
+    use std::sync::mpsc;
+
+    #[test]
+    fn test_explore_async() {
+        let config = ExplorerConfig::default();
+        let path = PathBuf::from("/usr/bin");
+        let (tx_msg_in, rx_msg_in) = mpsc::channel();
+
+        explore_async(config, path, None, 0, tx_msg_in.clone());
+
+        let task = rx_msg_in.recv().unwrap();
+
+        assert!(matches!(task.msg, MsgIn::Internal(_)));
+
+        let msgin = match task.msg {
+            MsgIn::Internal(m) => m,
+            _ => panic!(),
+        };
+
+        assert!(matches!(msgin, InternalMsg::SetDirectory(_)));
+
+        let dbuf = match msgin {
+            InternalMsg::SetDirectory(dbuf) => dbuf,
+            _ => panic!(),
+        };
+
+        assert_eq!(dbuf.parent, "/usr/bin");
+
+        drop(tx_msg_in);
+        assert!(rx_msg_in.recv().is_err());
+    }
+}
