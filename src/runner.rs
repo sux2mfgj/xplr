@@ -560,6 +560,9 @@ impl Runner {
             }
         }
 
+        drop(tx_msg_in);
+        drop(tx_pwd_watcher);
+
         terminal.clear()?;
         terminal.set_cursor(0, 0)?;
         execute!(terminal.backend_mut(), term::LeaveAlternateScreen)?;
