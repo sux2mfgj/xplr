@@ -1360,9 +1360,8 @@ impl App {
             .unwrap_or_default()
     }
 
-    fn enqueue(mut self, task: Task) -> Self {
+    fn enqueue(&mut self, task: Task) {
         self.msg_out.push_back(MsgOut::Enque(task));
-        self
     }
 
     pub fn handle_task(self, task: Task) -> Result<Self> {
@@ -1373,11 +1372,12 @@ impl App {
         app.refresh()
     }
 
-    fn handle_internal(self, msg: InternalMsg) -> Result<Self> {
+    fn handle_internal(mut self, msg: InternalMsg) -> Result<Self> {
         match msg {
             InternalMsg::SetDirectory(dir) => self.set_directory(dir),
             InternalMsg::AddLastFocus(parent, focus_path) => {
-                self.add_last_focus(parent, focus_path)
+                self.add_last_focus(parent, focus_path);
+                Ok(self)
             }
             InternalMsg::HandleKey(key) => self.handle_key(key),
         }
@@ -1542,7 +1542,7 @@ impl App {
             });
 
         for msg in msgs {
-            self = self.enqueue(Task::new(MsgIn::External(msg), Some(key)));
+            self.enqueue(Task::new(MsgIn::External(msg), Some(key)));
         }
 
         Ok(self)
@@ -1551,7 +1551,7 @@ impl App {
     pub fn explore_pwd(mut self) -> Result<Self> {
         let focus = &self.last_focus.get(&self.pwd).cloned().unwrap_or(None);
         let pwd = self.pwd.clone();
-        self = self.add_last_focus(pwd, focus.clone())?;
+        self.add_last_focus(pwd, focus.clone());
         let dir = explorer::explore_sync(
             self.explorer_config.clone(),
             self.pwd.clone().into(),
@@ -1714,7 +1714,7 @@ impl App {
             Ok(()) => {
                 let pwd = self.pwd.clone();
                 let focus = self.focused_node().map(|n| n.relative_path.clone());
-                self = self.add_last_focus(pwd, focus)?;
+                self.add_last_focus(pwd, focus);
                 self.pwd = dir.to_string_lossy().to_string();
                 if save_history {
                     self.history = self.history.push(format!("{}/", self.pwd));
@@ -1916,7 +1916,7 @@ impl App {
         }
     }
 
-    fn push_mode(mut self) -> Self {
+    fn push_mode(&mut self) {
         if self.mode != self.config.modes.builtin.recover
             && self
                 .last_modes
@@ -1924,9 +1924,8 @@ impl App {
                 .map(|m| m != &self.mode)
                 .unwrap_or(true)
         {
-            self.last_modes.push(self.mode.clone())
+            self.last_modes.push(self.mode.clone());
         }
-        self
     }
 
     fn pop_mode(self) -> Result<Self> {
@@ -1952,7 +1951,7 @@ impl App {
 
     fn switch_mode_keeping_input_buffer(mut self, mode: &str) -> Result<Self> {
         if let Some(mode) = self.config.modes.get(mode).cloned() {
-            self = self.push_mode();
+            self.push_mode();
             self.mode = mode.sanitized(self.config.general.read_only);
         } else {
             self.log_error(format!("Mode not found: {}", mode));
@@ -1970,7 +1969,7 @@ impl App {
 
     fn switch_mode_builtin_keeping_input_buffer(mut self, mode: &str) -> Result<Self> {
         if let Some(mode) = self.config.modes.builtin.get(mode).cloned() {
-            self = self.push_mode();
+            self.push_mode();
             self.mode = mode.sanitized(self.config.general.read_only);
         } else {
             self.log_error(format!("Builtin mode not found: {}", mode));
@@ -1988,7 +1987,7 @@ impl App {
 
     fn switch_mode_custom_keeping_input_buffer(mut self, mode: &str) -> Result<Self> {
         if let Some(mode) = self.config.modes.custom.get(mode).cloned() {
-            self = self.push_mode();
+            self.push_mode();
             self.mode = mode.sanitized(self.config.general.read_only);
         } else {
             self.log_error(format!("Custom mode not found: {}", mode));
@@ -2062,19 +2061,18 @@ impl App {
     }
 
     pub fn set_directory(mut self, dir: DirectoryBuffer) -> Result<Self> {
-        self = self.add_last_focus(
+        self.add_last_focus(
             dir.parent.clone(),
             dir.focused_node().map(|n| n.relative_path.clone()),
-        )?;
+        );
         if dir.parent == self.pwd {
             self.directory_buffer = Some(dir);
         }
         Ok(self)
     }
 
-    pub fn add_last_focus(mut self, parent: String, focused_path: Option<String>) -> Result<Self> {
+    pub fn add_last_focus(&mut self, parent: String, focused_path: Option<String>) {
         self.last_focus.insert(parent, focused_path);
-        Ok(self)
     }
 
     fn select(mut self) -> Result<Self> {
